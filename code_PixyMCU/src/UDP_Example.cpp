@@ -1,55 +1,42 @@
-#include <Arduino.h>
-#include <PixyMaps.h>
-#include <MotorService.h>
-#include <WebService.h>
+/*#include <ESP8266WiFi.h>
+#include <Secret.h>
+#include <WiFiUdp.h>
+
+const char* ssid = SSID;
+const char* password = PASSWORD;
 
 WiFiUDP Udp;
 unsigned int localUdpPort = 4210;  // local port to listen on
 char incomingPacket[255];  // buffer for incoming packets
-char  replyPacket[] = "OK";  // a reply string to send back
+char  replyPacket[] = "Hi there! Got the message :-)";  // a reply string to send back
 
-/**
- * @brief Parpadea el LED de la placa NodeMCU.
- * 
- * @param period En milisegundos.
- * @param iters Número de parpadeos.
- */
-void blink(int period, int iters){
-  for(int i=0; i<iters; i++){
-    digitalWrite(LED_BUILTIN, LOW);
-    delay(period/2);
-    digitalWrite(LED_BUILTIN, HIGH);
-    delay(period/2);
-  }
-}
 
-void setup() {
+void setup()
+{
   Serial.begin(9600);
+  Serial.println();
 
-  // Motors setup:
-  setupMotors();
-
-  // WiFi setup:
-  Serial.println("Connecting to " + String(SSID) + "...");
-
-  WiFi.begin(SSID, PASSWORD);
+  Serial.printf("Connecting to %s ", ssid);
+  WiFi.begin(ssid, password);
   while (WiFi.status() != WL_CONNECTED)
   {
     delay(500);
     Serial.print(".");
-    blink(10, 1);
   }
-  Serial.println(" Connected!");
-  blink(150, 2);
+  Serial.println(" connected");
 
   Udp.begin(localUdpPort);
   Serial.printf("Now listening at IP %s, UDP port %d\n", WiFi.localIP().toString().c_str(), localUdpPort);
 }
 
-void loop() {
+
+void loop()
+{
   int packetSize = Udp.parsePacket();
   if (packetSize)
   {
+    // receive incoming UDP packets
+    Serial.printf("Received %d bytes from %s, port %d\n", packetSize, Udp.remoteIP().toString().c_str(), Udp.remotePort());
     int len = Udp.read(incomingPacket, 255);
     if (len > 0)
     {
@@ -62,4 +49,4 @@ void loop() {
     Udp.write(replyPacket);
     Udp.endPacket();
   }
-}
+}*/
