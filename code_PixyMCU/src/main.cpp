@@ -1,109 +1,52 @@
-#include <Arduino.h>
+#include <ESP8266WiFi.h>
+#include <Secret.h>
+#include <WiFiUdp.h>
 
-#include <VisionService.h>
-#include <WebService.h>
-
-// Configuración de red:
 const char* ssid = SSID;
 const char* password = PASSWORD;
-IPAddress local_IP(LOCAL_IP);
-IPAddress gateway(GATEWAY);
-IPAddress subnet(SUBNET);
 
-// Servidor:
-ESP8266WebServer server(PORT);
+WiFiUDP Udp;
+unsigned int localUdpPort = 4210;  // local port to listen on
+char incomingPacket[255];  // buffer for incoming packets
+char  replyPacket[] = "Hi there! Got the message :-)";  // a reply string to send back
 
-// Pixy:
-Pixy pixy;
-
-// Circuito
-Block car;
-Block traj[TRAJ_POINTS];
-
-/**
- * @brief Parpadea el LED de la placa NodeMCU.
- * 
- * @param period En milisegundos.
- * @param iters Número de parpadeos.
- */
-void blink(int period, int iters){
-  for(int i=0; i<iters; i++){
-    digitalWrite(LED_BUILTIN, LOW);
-    delay(period/2);
-    digitalWrite(LED_BUILTIN, HIGH);
-    delay(period/2);
-  }
-}
 
 void setup()
 {
-  // Comunicación serial:
   Serial.begin(9600);
+  Serial.println();
 
-  // Inicialización de pines:
-  pinMode(LED_BUILTIN, OUTPUT);
+  Serial.printf("Connecting to %s ", ssid);
+  WiFi.begin(ssid, password);
+  while (WiFi.status() != WL_CONNECTED)
+  {
+    delay(500);
+    Serial.print(".");
+  }
+  Serial.println(" connected");
 
-  // Iniciando Punto de Acceso:
-  Serial.print("Configurando modo Soft-AP... ");
-  Serial.println(WiFi.softAPConfig(local_IP, gateway, subnet) ? "Ready" : "Failed");
-
-  Serial.print("Iniciando modo Soft-AP... ");
-  Serial.println(WiFi.softAP(ssid, password) ? "Ready" : "Failed");
-
-  Serial.print("Dirección IP Soft-AP: ");
-  Serial.println(WiFi.softAPIP());
-  delay(500);
-  blink(250, 3);
-
-  // Iniciando Servidor:
-  server.on("/", handleRoot);
-  server.on("/currPos", sendCurrPos);
-  server.begin();
-
-  // Iniciando Pixy:
-  pixy.init();
-  //pixy.pixyBlink(RGB_GREEN, 250, 3);
+  Udp.begin(localUdpPort);
+  Serial.printf("Now listening at IP %s, UDP port %d\n", WiFi.localIP().toString().c_str(), localUdpPort);
 }
 
+
 void loop()
-{ 
-  static int i = 0;
-  int j;
-  uint16_t blocks;
-  char buf[32]; 
-  
-  blocks = pixy.getBlocks();
-  
-  // If there are detect blocks, print them!
-  if (blocks)
+{
+  int packetSize = Udp.parsePacket();
+  if (packetSize)
   {
-    i++;
-    
-    if (i%50==0)
+    // receive incoming UDP packets
+    Serial.printf("Received %d bytes from %s, port %d\n", packetSize, Udp.remoteIP().toString().c_str(), Udp.remotePort());
+    int len = Udp.read(incomingPacket, 255);
+    if (len > 0)
     {
-      sprintf(buf, "Detected %d:\n", blocks);
-      Serial.print(buf);
-
-      int n = 0;
-      for (j=0; j<blocks; j++)
-      {
-        sprintf(buf, "  block %d: ", j);
-        Serial.print(buf); 
-        pixy.blocks[j].print();
-
-        // Procesamiento del mapa:
-        if(pixy.blocks[j].signature == SIG_TRAJ)
-        {
-          traj[n] = pixy.blocks[j];
-          ++n;
-        }
-        else if(pixy.blocks[j].signature == SIG_CAR)
-        {
-          car = pixy.blocks[j];
-        }
-      }
+      incomingPacket[len] = 0;
     }
-  }
+    Serial.printf("UDP packet contents: %s\n", incomingPacket);
 
-  server.handleClient();
+    // send back a reply, to the IP address and port we got the packet from
+    Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
+    Udp.write(replyPacket);
+    Udp.endPacket();
+  }
 }
