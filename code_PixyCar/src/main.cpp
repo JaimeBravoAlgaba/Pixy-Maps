@@ -31,7 +31,7 @@ void setup() {
 
   // WiFi setup:
   Serial.println("Connecting to " + String(SSID) + "...");
-
+  WiFi.config(IPAddress(LOCAL_IP), IPAddress(GATEWAY), IPAddress(SUBNET));
   WiFi.begin(SSID, PASSWORD);
   while (WiFi.status() != WL_CONNECTED)
   {
@@ -47,6 +47,7 @@ void setup() {
 }
 
 void loop() {
+  String payload;
   int packetSize = Udp.parsePacket();
   if (packetSize)
   {
@@ -55,7 +56,8 @@ void loop() {
     {
       incomingPacket[len] = 0;
     }
-    Serial.printf("UDP packet contents: %s\n", incomingPacket);
+    payload = String(incomingPacket);
+    Serial.println("Payload: " + payload);
 
     // send back a reply, to the IP address and port we got the packet from
     Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
