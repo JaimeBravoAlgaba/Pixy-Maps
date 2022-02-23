@@ -23,21 +23,8 @@
      * 
      */
     struct point{
-        float x;
-        float y;
-    };
-
-    /**
-     * @brief Clase para definir el mapa detectado.
-     * 
-     * @param corners Vector con las 4 esquinas del mapa.
-     */
-    class PixyMap{
-        public:
-            point corners[4];
-
-            PixyMap();
-            bool getCorners();
+        uint16_t x;
+        uint16_t y;
     };
 
 #endif
