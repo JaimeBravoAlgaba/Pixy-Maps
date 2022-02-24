@@ -9,7 +9,6 @@
 // motores del robot móvil.
 /*___________________________________________________________*/
 #include <Arduino.h>
-#include <PixyMaps.h>
 #include <MotorService.h>
 
 /**
@@ -67,4 +66,29 @@ void moveMotor(uint8_t motor, int16_t speed){
         digitalWrite(b, LOW);
     }
     analogWrite(s, speed);
+}
+
+/**
+ * @brief Returns the current position of the car as a tuple<int, int>.
+ * 
+ * @param payload String with the blocks detected by the Pixy cam.
+ * @return std::tuple<int, int> 
+ */
+std::tuple<int,int> getCurrPos(String payload){
+    // Payload structure: {CurrentPosition:[int,int];Trajectory:[[int,int],[int,int],...]}
+    // Extraccion del string con CurrentPosition:
+    int pos1 = payload.indexOf("CurrentPos");
+    int pos2 = payload.indexOf("Trajectory");
+    String currPos = payload.substring(pos1 , pos2);
+
+    // Extracción de x e y:
+    pos1 = currPos.indexOf("[");
+    pos2 = currPos.indexOf(",");    
+
+    int x = currPos.substring(pos1+1, pos2).toInt();
+    
+    pos1 = currPos.indexOf("]");
+    int y = currPos.substring(pos2+1, pos1).toInt();
+
+    return std::tuple<int,int> {x,y};
 }

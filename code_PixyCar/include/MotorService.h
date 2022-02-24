@@ -11,8 +11,6 @@
 // de los motores del robot móvil.
 /*___________________________________________________________*/
 
-#include <PixyMaps.h>
-
 #ifndef __MOTOR_SERVICE__
     #define __MOTOR_SERVICE__
 
@@ -27,8 +25,11 @@
     #define MOTOR_RA D7  // Right motor, input A.
     #define MOTOR_RB D8  // Right motor, input B.
     #define MOTOR_RS D6  // Right motor, speed (PWM).
+    
+    #include <tuple>
 
     // FUNCTIONS:
     void setupMotors();
     void moveMotor(uint8_t motor, int16_t speed);
+    std::tuple<int, int> getCurrPos(String payload);
 #endif

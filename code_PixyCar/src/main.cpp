@@ -2,11 +2,17 @@
 #include <PixyMaps.h>
 #include <MotorService.h>
 #include <WebService.h>
+#include <tuple>
 
+// Variables WiFi:
 WiFiUDP Udp;
 unsigned int localUdpPort = 4210;  // local port to listen on
 char incomingPacket[255];  // buffer for incoming packets
 char  replyPacket[] = "OK";  // a reply string to send back
+
+// Variables de control:
+std::tuple<uint16_t, uint16_t> car; 
+
 
 /**
  * @brief Parpadea el LED de la placa NodeMCU.
@@ -21,6 +27,11 @@ void blink(int period, int iters){
     digitalWrite(LED_BUILTIN, HIGH);
     delay(period/2);
   }
+}
+
+void printTuple(std::tuple<int,int> t)
+{
+  Serial.println("(" + String(std::get<0>(t)) + ", " + String(std::get<1>(t)) + ")");
 }
 
 void setup() {
@@ -63,5 +74,8 @@ void loop() {
     Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
     Udp.write(replyPacket);
     Udp.endPacket();
+
+    car = getCurrPos(payload);
+    Serial.println("CurrentPosition:" + String(std::get<0>(car)) + "," + String(std::get<1>(car)));
   }
 }
