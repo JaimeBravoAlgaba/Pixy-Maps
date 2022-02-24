@@ -6,7 +6,8 @@
 // Variables de gestión de red:
 WiFiUDP Udp;
 char incomingPacket[255];  // buffer for incoming packets
-char  replyPacket[] = "Hi there! Got the message :-)";  // a reply string to send back
+char  replyPacket[] = "OK";  // a reply string to send back
+String payload;
 
 // Variables de gestión de cámara Pixy:
 Pixy pixy;
@@ -33,6 +34,7 @@ void setup()
 
   // Inicialización de la cámara Pixy:
   pixy.init();
+  pixy.pixyBlink(RGB_GREEN, 150, 3);
   Serial.println("Cámara Pixy iniciada");
   Serial.println("____________________________________________________________");
 }
@@ -43,12 +45,11 @@ void loop()
   int j;
   uint16_t blocks;
   char buf[32];
-  String payload;
   
   // Lectura del mapa:
   blocks = pixy.getBlocks();
-  point traj[blocks-1];
-  point car;
+  Point traj[blocks-1];
+  Point car = {.x=0, .y=0};
   
   // Si hay bloques, se procesa la información:
   if (blocks)
@@ -82,20 +83,20 @@ void loop()
           car.x = pixy.blocks[j].x;
           car.y = pixy.blocks[j].y;
         }
-      }
-    }
-  }  
+      }      
   
-  // Envío de datos:
-  Udp.beginPacket(IPAddress(LOCAL_IP), LOCAL_UDP_PORT);
-  payload = "{CurrentPos:[" + String(car.x) + "," + String(car.y) + "];Trajectory:[";
-  for(int i=0; i<blocks-2; i++)
-  {
-    payload = payload + "[" + String(traj[i].x) + "," + String(traj[i].y) + "],";
-  }
-  payload = payload + "[" + String(traj[i].x) + "," + String(traj[i].y) + "]]}";
+      // Envío de datos:
+      Udp.beginPacket(IPAddress(LOCAL_IP), LOCAL_UDP_PORT);
+      payload = "{CurrentPos:[" + String(car.x) + "," + String(car.y) + "];Trajectory:[";
 
-  Udp.write(payload.c_str());
-  Udp.endPacket();
-  delay(50);
+      for(j=0; j<blocks-2; j++)
+      {
+        payload = payload + "[" + String(traj[j].x) + "," + String(traj[j].y) + "],";
+      }
+      payload = payload + "[" + String(traj[j].x) + "," + String(traj[j].y) + "]]}";
+      //Serial.println(payload);
+      Udp.write(payload.c_str());
+      Udp.endPacket();
+    }
+  } 
 }
