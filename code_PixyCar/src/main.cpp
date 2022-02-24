@@ -12,6 +12,7 @@ char  replyPacket[] = "OK";  // a reply string to send back
 
 // Variables de control:
 std::tuple<uint16_t, uint16_t> car;
+std::tuple<uint16_t, uint16_t> target;
 int nPoints = 0;
 
 
@@ -81,5 +82,8 @@ void loop() {
 
     nPoints = getTrajPoints(payload);
     Serial.println("TrajectoryPoints:" + String(nPoints));
+
+    target = getPoint(payload, 0);
+    Serial.println("Target:" + String(std::get<0>(target)) + "," + String(std::get<1>(target)));
   }
 }

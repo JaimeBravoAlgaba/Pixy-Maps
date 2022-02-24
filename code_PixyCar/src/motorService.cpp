@@ -75,7 +75,7 @@ void moveMotor(uint8_t motor, int16_t speed){
  * @return std::tuple<int, int> 
  */
 std::tuple<int,int> getCurrPos(String payload){
-    // Payload structure: {CurrentPosition:[int,int];Trajectory:[[int,int],[int,int],...]}
+    // Payload structure: {CurrentPosition:[int,int];Trajectory(n):[[int,int],[int,int],...]}
     // Extraccion del string con CurrentPosition:
     int pos1 = payload.indexOf("CurrentPos");
     int pos2 = payload.indexOf("Trajectory");
@@ -94,15 +94,56 @@ std::tuple<int,int> getCurrPos(String payload){
 }
 
 /**
- * @brief Returns the current position of the car as a tuple<int, int>.
+ * @brief Returns the number of points in the trajectory.
  * 
  * @param payload String with the blocks detected by the Pixy cam.
  * @return std::tuple<int, int> 
  */
 int getTrajPoints(String payload){
-    // Payload structure: {CurrentPosition:[int,int];Trajectory:[[int,int],[int,int],...]}
+    // Payload structure: {CurrentPosition:[int,int];Trajectory(n):[[int,int],[int,int],...]}
     int pos1 = payload.indexOf("(");
     int pos2 = payload.indexOf(")");
 
     return payload.substring(pos1+1, pos2).toInt();
+}
+
+/**
+ * @brief Returns the desired point of the trajectory as a tuple<int, int>.
+ * 
+ * @param payload String with the blocks detected by the Pixy cam.
+ * @param index Index of the point in the trajectory.
+ * @return std::tuple<int, int> 
+ */
+std::tuple<int,int> getPoint(String payload, int index){
+    // Payload structure: {CurrentPosition:[int,int];Trajectory(n):[[int,int],[int,int],...]}
+    int nPoints = getTrajPoints(payload);
+
+    // Si el índice no es correcto:
+    if(index >= nPoints)
+    {
+        Serial.println("Índice no válido! Retorno: [0,0].");
+        return std::tuple<int,int> {0,0};
+    }
+
+    int pos1 = payload.indexOf("):[") + 2;
+    int pos2 = payload.indexOf("]}");
+
+    // String con todos los puntos:
+    String currPos = payload.substring(pos1 + 1, pos2);
+
+    int n = 0;
+    do{
+        pos1 = currPos.indexOf("[");
+        ++n;
+    }while(n < index);
+
+    currPos = currPos.substring(pos1);
+
+    pos2 = currPos.indexOf(",");
+    int x = currPos.substring(1, pos2).toInt();
+
+    pos1 = currPos.indexOf("]");
+    int y = currPos.substring(pos2+1, pos1).toInt();
+
+    return std::tuple<int,int> {x,y};
 }
