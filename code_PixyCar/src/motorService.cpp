@@ -92,3 +92,17 @@ std::tuple<int,int> getCurrPos(String payload){
 
     return std::tuple<int,int> {x,y};
 }
+
+/**
+ * @brief Returns the current position of the car as a tuple<int, int>.
+ * 
+ * @param payload String with the blocks detected by the Pixy cam.
+ * @return std::tuple<int, int> 
+ */
+int getTrajPoints(String payload){
+    // Payload structure: {CurrentPosition:[int,int];Trajectory:[[int,int],[int,int],...]}
+    int pos1 = payload.indexOf("(");
+    int pos2 = payload.indexOf(")");
+
+    return payload.substring(pos1+1, pos2).toInt();
+}

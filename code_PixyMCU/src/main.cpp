@@ -87,7 +87,7 @@ void loop()
   
       // Envío de datos:
       Udp.beginPacket(IPAddress(LOCAL_IP), LOCAL_UDP_PORT);
-      payload = "{CurrentPos:[" + String(car.x) + "," + String(car.y) + "];Trajectory(" + String(blocks) +"):[";
+      payload = "{CurrentPos:[" + String(car.x) + "," + String(car.y) + "];Trajectory(" + String(blocks-1) +"):[";
 
       for(j=0; j<blocks-2; j++)
       {
