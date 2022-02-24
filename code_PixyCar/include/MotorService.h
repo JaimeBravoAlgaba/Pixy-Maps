@@ -18,8 +18,8 @@
     #define MOTOR_R 1
 
     // PINOUT:
-    #define MOTOR_LA D3  // Left motor, input A.
-    #define MOTOR_LB D4  // Left motor, input B.
+    #define MOTOR_LA D4  // Left motor, input A.
+    #define MOTOR_LB D3  // Left motor, input B.
     #define MOTOR_LS D5  // Left motor, speed (PWM).
 
     #define MOTOR_RA D7  // Right motor, input A.

@@ -85,5 +85,18 @@ void loop() {
 
     target = getPoint(payload, 0);
     Serial.println("Target:" + String(std::get<0>(target)) + "," + String(std::get<1>(target)));
+
+    float d = (std::get<0>(target) - std::get<0>(car)) * (std::get<0>(target) - std::get<0>(car));
+    d += (std::get<1>(target) - std::get<1>(car)) * (std::get<1>(target) - std::get<1>(car));
+    d = sqrt(d);
+
+    if(d > 20){
+      moveMotor(MOTOR_L, 20);
+      moveMotor(MOTOR_R, 20);
+    }
+    else{
+      moveMotor(MOTOR_L, 0);
+      moveMotor(MOTOR_R, 0);
+    }
   }
 }
