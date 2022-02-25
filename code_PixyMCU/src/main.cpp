@@ -44,7 +44,7 @@ void loop()
   static int i = 0;
   int j;
   uint16_t blocks;
-  char buf[32];
+  //char buf[32];
   
   // Lectura del mapa:
   blocks = pixy.getBlocks();
@@ -57,17 +57,18 @@ void loop()
   {
     i++;
 
-    if (i%50==0)
+    //if (i%50==0) // Usar esta opción si se descomentan los printf!!!!!
+    if (i%10==0)
     {
-      sprintf(buf, "Detected %d:\n", blocks);
-      Serial.print(buf);
+      //sprintf(buf, "Detected %d:\n", blocks);
+      //Serial.print(buf);
 
       int k = 0;
       for (j=0; j<blocks; j++)
       {
-        sprintf(buf, "  block %d: ", j);
-        Serial.print(buf); 
-        pixy.blocks[j].print();
+        //sprintf(buf, "  block %d: ", j);
+        //Serial.print(buf); 
+        //pixy.blocks[j].print();
 
         uint16_t sig = pixy.blocks[j].signature;
 

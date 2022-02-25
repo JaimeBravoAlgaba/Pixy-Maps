@@ -73,7 +73,7 @@ void loop() {
       incomingPacket[len] = 0;
     }
     payload = String(incomingPacket);
-    Serial.println("Payload: " + payload);
+    //Serial.println("Payload: " + payload);
 
     // send back a reply, to the IP address and port we got the packet from
     Udp.beginPacket(Udp.remoteIP(), Udp.remotePort());
@@ -81,25 +81,27 @@ void loop() {
     Udp.endPacket();
 
     car = getPos(payload);
-    Serial.println("CurrentPosition:" + String(std::get<0>(car)) + "," + String(std::get<1>(car)));
+    //Serial.println("CurrentPosition:" + String(std::get<0>(car)) + "," + String(std::get<1>(car)));
 
     nPoints = getTrajPoints(payload);
-    Serial.println("TrajectoryPoints:" + String(nPoints));
+    //Serial.println("TrajectoryPoints:" + String(nPoints));
 
     //target = getPoint(payload, t);
     target = getNearestPoint(payload, reachedPoints);
-    Serial.println("Target:" + String(std::get<0>(target)) + "," + String(std::get<1>(target)));
+    //Serial.println("Target:" + String(std::get<0>(target)) + "," + String(std::get<1>(target)));
 
     angle = getOrientation(payload, target);
-    Serial.println("Angle:" + String(angle));
+    //Serial.println("Angle:" + String(angle));
 
     float d = (std::get<0>(target) - std::get<0>(car)) * (std::get<0>(target) - std::get<0>(car));
     d += (std::get<1>(target) - std::get<1>(car)) * (std::get<1>(target) - std::get<1>(car));
     d = sqrt(d);
 
     if(d > 20){
-      moveMotor(MOTOR_L, 30 + 20*sin(angle));
-      moveMotor(MOTOR_R, 30 - 20*sin(angle));
+      moveMotor(MOTOR_L, 100 + 40*sin(angle));
+      moveMotor(MOTOR_R, 100 - 40*sin(angle));
+      //moveMotor(MOTOR_L, 20 + 20*sin(angle));
+      //moveMotor(MOTOR_R, 20 - 20*sin(angle));
     }
     else{
       if(t>=nPoints)
