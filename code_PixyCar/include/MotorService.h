@@ -31,7 +31,8 @@
     // FUNCTIONS:
     void setupMotors();
     void moveMotor(uint8_t motor, int16_t speed);
-    std::tuple<int, int> getCurrPos(String payload);
+    std::tuple<int, int> getRearPos(String payload);
+    std::tuple<int, int> getFrontPos(String payload);
     int getTrajPoints(String payload);
     std::tuple<int, int> getPoint(String payload, int index);
 #endif

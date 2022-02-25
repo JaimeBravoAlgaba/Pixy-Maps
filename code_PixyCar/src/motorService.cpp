@@ -69,15 +69,40 @@ void moveMotor(uint8_t motor, int16_t speed){
 }
 
 /**
- * @brief Returns the current position of the car as a tuple<int, int>.
+ * @brief Returns the rear position of the car as a tuple<int, int>.
  * 
  * @param payload String with the blocks detected by the Pixy cam.
  * @return std::tuple<int, int> 
  */
-std::tuple<int,int> getCurrPos(String payload){
-    // Payload structure: {CurrentPosition:[int,int];Trajectory(n):[[int,int],[int,int],...]}
-    // Extraccion del string con CurrentPosition:
-    int pos1 = payload.indexOf("CurrentPos");
+std::tuple<int,int> getRearPos(String payload){
+    // Payload structure: {RearPos:[int,int];FrontPos:[int,int];Trajectory(n):[[int,int],[int,int],...]}
+    // Extraccion del string con FrontPos:
+    int pos1 = payload.indexOf("RearPos");
+    int pos2 = payload.indexOf("FrontPos");
+    String currPos = payload.substring(pos1 , pos2);
+
+    // Extracción de x e y:
+    pos1 = currPos.indexOf("[");
+    pos2 = currPos.indexOf(",");    
+
+    int x = currPos.substring(pos1+1, pos2).toInt();
+    
+    pos1 = currPos.indexOf("]");
+    int y = currPos.substring(pos2+1, pos1).toInt();
+
+    return std::tuple<int,int> {x,y};
+}
+
+/**
+ * @brief Returns the front position of the car as a tuple<int, int>.
+ * 
+ * @param payload String with the blocks detected by the Pixy cam.
+ * @return std::tuple<int, int> 
+ */
+std::tuple<int,int> getFrontPos(String payload){
+    // Payload structure: {RearPos:[int,int];FrontPos:[int,int];Trajectory(n):[[int,int],[int,int],...]}
+    // Extraccion del string con FrontPos:
+    int pos1 = payload.indexOf("FrontPos");
     int pos2 = payload.indexOf("Trajectory");
     String currPos = payload.substring(pos1 , pos2);
 
@@ -100,7 +125,7 @@ std::tuple<int,int> getCurrPos(String payload){
  * @return std::tuple<int, int> 
  */
 int getTrajPoints(String payload){
-    // Payload structure: {CurrentPosition:[int,int];Trajectory(n):[[int,int],[int,int],...]}
+    // Payload structure: {RearPos:[int,int];FrontPos:[int,int];Trajectory(n):[[int,int],[int,int],...]}
     int pos1 = payload.indexOf("(");
     int pos2 = payload.indexOf(")");
 
@@ -115,7 +140,7 @@ int getTrajPoints(String payload){
  * @return std::tuple<int, int> 
  */
 std::tuple<int,int> getPoint(String payload, int index){
-    // Payload structure: {CurrentPosition:[int,int];Trajectory(n):[[int,int],[int,int],...]}
+    // Payload structure: {RearPos:[int,int];FrontPos:[int,int];Trajectory(n):[[int,int],[int,int],...]}
     int nPoints = getTrajPoints(payload);
 
     // Si el índice no es correcto:

@@ -49,7 +49,8 @@ void loop()
   // Lectura del mapa:
   blocks = pixy.getBlocks();
   Point traj[blocks-1];
-  Point car = {.x=0, .y=0};
+  Point car_rear = {.x=0, .y=0};
+  Point car_front = {.x=0, .y=0};
   
   // Si hay bloques, se procesa la información:
   if (blocks)
@@ -77,19 +78,27 @@ void loop()
           traj[k].y = pixy.blocks[j].y;
           k++;
         }
-        // Si es la posición del coche:
-        else if(sig == SIG_CAR)
+        // Si es la posición trasera del coche:
+        else if(sig == SIG_CAR_R)
         {
-          car.x = pixy.blocks[j].x;
-          car.y = pixy.blocks[j].y;
+          car_rear.x = pixy.blocks[j].x;
+          car_rear.y = pixy.blocks[j].y;
+        }
+        // Si es la posición delantera del coche:
+        else if(sig == SIG_CAR_F)
+        {
+          car_front.x = pixy.blocks[j].x;
+          car_front.y = pixy.blocks[j].y;
         }
       }      
   
       // Envío de datos:
       Udp.beginPacket(IPAddress(LOCAL_IP), LOCAL_UDP_PORT);
-      payload = "{CurrentPos:[" + String(car.x) + "," + String(car.y) + "];Trajectory(" + String(blocks-1) +"):[";
+      payload = "{RearPos:["    + String(car_rear.x)  + ","    + String(car_rear.y)  + 
+                "{FrontPos:["   + String(car_front.x) + ","    + String(car_front.y) + 
+                "];Trajectory(" + String(blocks-1)    + "):[";
 
-      for(j=0; j<blocks-2; j++)
+      for(j=0; j<blocks-3; j++)
       {
         payload = payload + "[" + String(traj[j].x) + "," + String(traj[j].y) + "],";
       }

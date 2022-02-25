@@ -12,10 +12,12 @@
     // COLORES PIXY
     #define SIG_RED     1
     #define SIG_BLUE    2
+    #define SIG_YELL    3
     
     // CIRCUITO
-    #define SIG_TRAJ    SIG_RED
-    #define SIG_CAR     SIG_BLUE
+    #define SIG_TRAJ    SIG_RED     // Código de los puntos de la trayectoria.
+    #define SIG_CAR_R   SIG_BLUE    // Código del punto trasero del coche (rear).
+    #define SIG_CAR_F   SIG_YELL    // Código del punto delantero del coche (front).
     #define TRAJ_POINTS 6
 
     /**
