@@ -155,7 +155,7 @@ float getOrientation(String payload, std::tuple<int,int> target){
     float modu = sqrt(ux*ux + uy*uy);
     float modv = sqrt(vx*vx + vy*vy);
 
-    return acos((ux*vx + uy*vy)/(modu*modv));
+    return asin((ux*vy - uy*vx)/(modu*modv));
 }
 
 /**

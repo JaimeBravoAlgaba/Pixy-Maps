@@ -96,7 +96,7 @@ void loop()
       Udp.beginPacket(IPAddress(LOCAL_IP), LOCAL_UDP_PORT);
       payload = "{RearPos:["    + String(car_rear.x)  + ","    + String(car_rear.y)  + 
                 "{FrontPos:["   + String(car_front.x) + ","    + String(car_front.y) + 
-                "];Trajectory(" + String(blocks-1)    + "):[";
+                "];Trajectory(" + String(blocks-2)    + "):[";
 
       for(j=0; j<blocks-3; j++)
       {

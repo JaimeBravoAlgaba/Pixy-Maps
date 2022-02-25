@@ -62,6 +62,7 @@ void setup() {
 
 void loop() {
   String payload;
+  static int t = 0;
   int packetSize = Udp.parsePacket();
   if (packetSize)
   {
@@ -84,7 +85,7 @@ void loop() {
     nPoints = getTrajPoints(payload);
     Serial.println("TrajectoryPoints:" + String(nPoints));
 
-    target = getPoint(payload, 0);
+    target = getPoint(payload, t);
     Serial.println("Target:" + String(std::get<0>(target)) + "," + String(std::get<1>(target)));
 
     angle = getOrientation(payload, target);
@@ -95,10 +96,11 @@ void loop() {
     d = sqrt(d);
 
     if(d > 20){
-      moveMotor(MOTOR_L, 20);
-      moveMotor(MOTOR_R, 20);
+      moveMotor(MOTOR_L, 30 + 20*sin(angle));
+      moveMotor(MOTOR_R, 30 - 20*sin(angle));
     }
     else{
+      t =(t>=nPoints)?0:t+1;
       moveMotor(MOTOR_L, 0);
       moveMotor(MOTOR_R, 0);
     }
