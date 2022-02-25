@@ -118,6 +118,23 @@ std::tuple<int,int> getFrontPos(String payload){
     return std::tuple<int,int> {x,y};
 }
 
+
+/**
+ * @brief Returns the middle position of the car as a tuple<float, float>.
+ * 
+ * @param payload String with the blocks detected by the Pixy cam.
+ * @return std::tuple<int, int> 
+ */
+std::tuple<float, float> getPos(String payload){
+    std::tuple<int,int> rear = getRearPos(payload);
+    std::tuple<int,int> front = getFrontPos(payload);
+
+    float x = std::get<0>(rear) + std::get<0>(front);
+    float y = std::get<1>(rear) + std::get<1>(front);
+
+    return std::tuple<int,int> {x/2.0,y/2.0};
+}
+
 /**
  * @brief Returns the number of points in the trajectory.
  * 

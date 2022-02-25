@@ -11,8 +11,7 @@ char incomingPacket[255];  // buffer for incoming packets
 char  replyPacket[] = "OK";  // a reply string to send back
 
 // Variables de control:
-std::tuple<uint16_t, uint16_t> car_rear;
-std::tuple<uint16_t, uint16_t> car_front;
+std::tuple<float, float> car;
 std::tuple<uint16_t, uint16_t> target;
 int nPoints = 0;
 
@@ -78,8 +77,8 @@ void loop() {
     Udp.write(replyPacket);
     Udp.endPacket();
 
-    car_front = getFrontPos(payload);
-    Serial.println("CurrentPosition:" + String(std::get<0>(car_front)) + "," + String(std::get<1>(car_front)));
+    car = getPos(payload);
+    Serial.println("CurrentPosition:" + String(std::get<0>(car)) + "," + String(std::get<1>(car)));
 
     nPoints = getTrajPoints(payload);
     Serial.println("TrajectoryPoints:" + String(nPoints));
@@ -87,8 +86,8 @@ void loop() {
     target = getPoint(payload, 0);
     Serial.println("Target:" + String(std::get<0>(target)) + "," + String(std::get<1>(target)));
 
-    float d = (std::get<0>(target) - std::get<0>(car_front)) * (std::get<0>(target) - std::get<0>(car_front));
-    d += (std::get<1>(target) - std::get<1>(car_front)) * (std::get<1>(target) - std::get<1>(car_front));
+    float d = (std::get<0>(target) - std::get<0>(car)) * (std::get<0>(target) - std::get<0>(car));
+    d += (std::get<1>(target) - std::get<1>(car)) * (std::get<1>(target) - std::get<1>(car));
     d = sqrt(d);
 
     if(d > 20){
