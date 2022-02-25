@@ -136,6 +136,29 @@ std::tuple<float, float> getPos(String payload){
 }
 
 /**
+ * @brief Get the angle between the car and the target point.
+ * 
+ * @param payload 
+ * @param target 
+ * @return float Angle in radians
+ */
+float getOrientation(String payload, std::tuple<int,int> target){
+    std::tuple<int,int> rear = getRearPos(payload);
+    std::tuple<int,int> front = getFrontPos(payload);
+
+    float ux = std::get<0>(front) - std::get<0>(rear);
+    float uy = std::get<1>(front) - std::get<1>(rear);
+
+    float vx = std::get<0>(target) - std::get<0>(rear);
+    float vy = std::get<1>(target) - std::get<1>(rear);
+
+    float modu = sqrt(ux*ux + uy*uy);
+    float modv = sqrt(vx*vx + vy*vy);
+
+    return acos((ux*vx + uy*vy)/(modu*modv));
+}
+
+/**
  * @brief Returns the number of points in the trajectory.
  * 
  * @param payload String with the blocks detected by the Pixy cam.

@@ -13,6 +13,7 @@ char  replyPacket[] = "OK";  // a reply string to send back
 // Variables de control:
 std::tuple<float, float> car;
 std::tuple<uint16_t, uint16_t> target;
+float angle = 0.0;
 int nPoints = 0;
 
 
@@ -85,6 +86,9 @@ void loop() {
 
     target = getPoint(payload, 0);
     Serial.println("Target:" + String(std::get<0>(target)) + "," + String(std::get<1>(target)));
+
+    angle = getOrientation(payload, target);
+    Serial.println("Angle:" + String(angle));
 
     float d = (std::get<0>(target) - std::get<0>(car)) * (std::get<0>(target) - std::get<0>(car));
     d += (std::get<1>(target) - std::get<1>(car)) * (std::get<1>(target) - std::get<1>(car));
