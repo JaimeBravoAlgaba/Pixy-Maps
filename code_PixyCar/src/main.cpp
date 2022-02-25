@@ -15,6 +15,7 @@ std::tuple<float, float> car;
 std::tuple<uint16_t, uint16_t> target;
 float angle = 0.0;
 int nPoints = 0;
+String reachedPoints = ",";
 
 
 /**
@@ -85,7 +86,8 @@ void loop() {
     nPoints = getTrajPoints(payload);
     Serial.println("TrajectoryPoints:" + String(nPoints));
 
-    target = getPoint(payload, t);
+    //target = getPoint(payload, t);
+    target = getNearestPoint(payload, reachedPoints);
     Serial.println("Target:" + String(std::get<0>(target)) + "," + String(std::get<1>(target)));
 
     angle = getOrientation(payload, target);
@@ -100,7 +102,17 @@ void loop() {
       moveMotor(MOTOR_R, 30 - 20*sin(angle));
     }
     else{
-      t =(t>=nPoints)?0:t+1;
+      if(t>=nPoints)
+      {
+        reachedPoints = ",";
+        t = 0;
+      }
+      else
+      {
+        reachedPoints = reachedPoints + String(t) + ",";
+        t++;
+      }
+
       moveMotor(MOTOR_L, 0);
       moveMotor(MOTOR_R, 0);
     }

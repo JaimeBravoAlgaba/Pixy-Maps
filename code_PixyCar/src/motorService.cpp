@@ -212,3 +212,39 @@ std::tuple<int,int> getPoint(String payload, int index){
 
     return std::tuple<int,int> {x,y};
 }
+
+/**
+ * @brief Returns the nearest point of the trajectory as a tuple<int, int>.
+ * 
+ * @param payload String with the blocks detected by the Pixy cam.
+ * @return std::tuple<int, int> 
+ */
+std::tuple<int,int> getNearestPoint(String payload, String reachedPoints)
+{
+    std::tuple<float,float> currentPos = getPos(payload);
+    std::tuple<int,int> nearestPoint = currentPos;
+    std::tuple<int,int> auxPoint = currentPos;
+
+    int nPoints = getTrajPoints(payload);
+    float distance = 0.0;
+    float nearestDistance = 10000.0;
+
+    for(int i=0; i<nPoints; ++i)
+    {
+        auxPoint = getPoint(payload, i);
+        distance =  (std::get<0>(currentPos) - std::get<0>(auxPoint)) * (std::get<0>(currentPos) - std::get<0>(auxPoint));
+        distance += (std::get<1>(currentPos) - std::get<1>(auxPoint)) * (std::get<1>(currentPos) - std::get<1>(auxPoint));
+        distance = sqrt(distance);
+
+        if(distance > 20)
+        {
+            if(distance < nearestDistance && !(reachedPoints.indexOf("," + String(i) + ",") >= 0))
+            {
+                nearestPoint = auxPoint;
+            }
+        }
+    }
+
+
+    return nearestPoint;
+}

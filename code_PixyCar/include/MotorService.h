@@ -37,4 +37,5 @@
     float getOrientation(String payload, std::tuple<int,int> target);
     int getTrajPoints(String payload);
     std::tuple<int, int> getPoint(String payload, int index);
+    std::tuple<int,int> getNearestPoint(String payload, String reachedPoints);
 #endif
